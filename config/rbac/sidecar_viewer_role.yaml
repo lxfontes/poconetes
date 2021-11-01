@@ -1,0 +1,20 @@
+# permissions for end users to view sidecars.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sidecar-viewer-role
+rules:
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - sidecars
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - sidecars/status
+  verbs:
+  - get

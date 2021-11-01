@@ -1,0 +1,26 @@
+apiVersion: apps.poconetes.dev/v1
+kind: Plan
+metadata:
+  name: default
+spec:
+  scaling:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  container_resources:
+    requests:
+      cpu: "5m"
+      memory: "250Mi"
+    limits:
+      memory:  "512Mi"
+      cpu: "50m"
+  sidecar_resources:
+    requests:
+      cpu: "5m"
+      memory: "1Mi"
+    limits:
+      memory:  "50Mi"
+      cpu: "50m"

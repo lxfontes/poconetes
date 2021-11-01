@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: public
+  namespace: app
+spec:
+  tls:
+  - hosts:
+    - smart-somebody.poconetes.dev
+    secretName: public-tls
+  rules:
+  - host: smart-somebody.poconetes.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: web
+          servicePort: 8080

@@ -1,0 +1,7 @@
+apiVersion: apps.poconetes.dev/v1
+kind: Sidecar
+metadata:
+  name: sidecar-sample
+spec:
+  # Add fields here
+  foo: bar

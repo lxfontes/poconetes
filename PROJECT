@@ -1,0 +1,50 @@
+domain: poconetes.dev
+layout:
+- go.kubebuilder.io/v3
+multigroup: true
+projectName: poconetes
+repo: github.com/lxfontes/poconetes
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: poconetes.dev
+  group: tunnels
+  kind: Client
+  path: github.com/lxfontes/poconetes/apis/tunnels/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: poconetes.dev
+  group: apps
+  kind: Formation
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: false
+  domain: poconetes.dev
+  group: apps
+  kind: Plan
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: poconetes.dev
+  group: apps
+  kind: Sidecar
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: poconetes.dev
+  group: apps
+  kind: Initializer
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+version: "3"

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: no-priv
+spec:
+ containers:
+   - name: no-priv
+     image: quay.io/podman/stable
+     args:
+       - sleep
+       - "1000000"
+     securityContext:
+       # privileged: true
+       seccompProfile:
+         type: Unconfined
+       runAsUser: 1000
+       allowPrivilegeEscalation: true
+       capabilities:
+         add:
+           - CLONE_NEWUSER
+           - SYS_ADMIN
+           - MKNOD
+           - SYS_CHROOT
+           - SETFCAP
+     # resources:
+     #   limits:
+     #     github.com/fuse: 1
+     volumeMounts:
+       - mountPath: /storage
+         name: local
+ volumes:
+   - name: local
+     emptyDir: {}

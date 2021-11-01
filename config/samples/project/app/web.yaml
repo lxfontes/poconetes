@@ -1,0 +1,24 @@
+apiVersion: apps.poconetes.dev/v1
+kind: Formation
+metadata:
+  generateName: jebb-
+  namespace: app
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  image: polinux/stress
+  command: ["stress"]
+  args: ["--vm", "1", "--vm-bytes", "1M", "--vm-hang", "1"]
+  tls:
+    issuer:
+      kind: ClusterIssuer
+      name: project-ca
+    names:
+    - web.flag
+  scaling:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
