@@ -1,0 +1,20 @@
+# permissions for end users to view builders.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: builder-viewer-role
+rules:
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builders
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builders/status
+  verbs:
+  - get

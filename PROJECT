@@ -25,7 +25,6 @@ resources:
   version: v1
 - api:
     crdVersion: v1
-    namespaced: false
   domain: poconetes.dev
   group: apps
   kind: Plan
@@ -45,6 +44,24 @@ resources:
   domain: poconetes.dev
   group: apps
   kind: Initializer
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: poconetes.dev
+  group: apps
+  kind: Build
+  path: github.com/lxfontes/poconetes/apis/apps/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: poconetes.dev
+  group: apps
+  kind: Builder
   path: github.com/lxfontes/poconetes/apis/apps/v1
   version: v1
 version: "3"

@@ -31,7 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	certmanager "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1beta1"
+	certmanager "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1"
 
 	appsv1 "github.com/lxfontes/poconetes/apis/apps/v1"
 	tunnelsv1 "github.com/lxfontes/poconetes/apis/tunnels/v1"
@@ -97,6 +97,20 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Formation")
+		os.Exit(1)
+	}
+	if err = (&appscontrollers.BuildReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Build")
+		os.Exit(1)
+	}
+	if err = (&appscontrollers.BuilderReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Builder")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

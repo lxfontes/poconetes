@@ -2,12 +2,13 @@ apiVersion: apps.poconetes.dev/v1
 kind: Formation
 metadata:
   name: autoscaling
+  namespace: sample-project
+  annotations:
+    poco-builder: sample-builder
 spec:
   minReplicas: 1
   maxReplicas: 10
   image: polinux/stress
-  command: ["stress"]
-  args: ["--vm", "1", "--vm-bytes", "700M", "--vm-hang", "1"]
   tls:
     issuer:
       kind: ClusterIssuer

@@ -1,0 +1,13 @@
+apiVersion: apps.poconetes.dev/v1
+kind: Build
+metadata:
+  # should have owner-ref to builder
+  name: builder-abcxyz
+  namespace: sample-project
+  annotations:
+    poco-builder: sample-builder
+spec:
+  ref: master
+  head: abczyx
+  image: nginx
+  tag: latest

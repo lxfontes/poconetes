@@ -1,0 +1,9 @@
+apiVersion: apps.poconetes.dev/v1
+kind: Builder
+metadata:
+  name: builder-sample
+  namespace: sample-project
+spec:
+  environment:
+  - name: THIS
+    value: THAT

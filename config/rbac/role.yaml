@@ -21,6 +21,58 @@ rules:
 - apiGroups:
   - apps.poconetes.dev
   resources:
+  - builders
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builders/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builders/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builds/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
+  - builds/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - apps.poconetes.dev
+  resources:
   - formations
   verbs:
   - create
