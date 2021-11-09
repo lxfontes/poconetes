@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"sort"
+	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -29,13 +30,14 @@ import (
 	v1 "github.com/lxfontes/poconetes/apis/apps/v1"
 )
 
-const builderIndexName = "idx." + v1.BuilderAnnotation
+const buildIndexName = "idx." + v1.BuildStreamAnnotation
+
+var buildIndexTimeout = 5 * time.Minute
 
 // BuildReconciler reconciles a Build object
 type BuildReconciler struct {
 	client.Client
-	Scheme  *runtime.Scheme
-	indexer client.FieldIndexer
+	Scheme *runtime.Scheme
 }
 
 //+kubebuilder:rbac:groups=apps.poconetes.dev,resources=builds,verbs=get;list;watch;create;update;patch;delete
@@ -51,9 +53,9 @@ func (r *BuildReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		return ctrl.Result{}, err
 	}
 
-	builderName, ok := build.GetAnnotations()[v1.BuilderAnnotation]
-	if !ok {
-		ll.Info("no build ownership defined")
+	streamName := build.Spec.Stream
+	if streamName == "" {
+		ll.Info("no build stream defined")
 		return ctrl.Result{}, nil
 	}
 
@@ -61,7 +63,7 @@ func (r *BuildReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	if err := r.List(ctx,
 		builds,
 		client.InNamespace(req.Namespace),
-		client.MatchingFields{builderIndexName: builderName},
+		client.MatchingFields{buildIndexName: streamName},
 	); err != nil {
 		return ctrl.Result{}, err
 	}
@@ -94,22 +96,23 @@ func (r *BuildReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		ctx,
 		formations,
 		client.InNamespace(build.Namespace),
-		client.MatchingFields{builderIndexName: builderName},
+		client.MatchingFields{buildIndexName: streamName},
 	); err != nil {
 		return ctrl.Result{}, err
-	}
-	if len(formations.Items) == 0 {
-		ll.Info("no formations found")
 	}
 
 	// replace the image and save the formation
 	var hasErrors bool
 	for _, formRaw := range formations.Items {
-		ll.Info("Updating Formation", "name", formRaw.GetName())
+		if formRaw.Spec.Image == build.Spec.Image {
+			continue
+		}
+
 		f := formRaw.DeepCopy()
+		ll.Info("Updating Formation", "name", f.GetName())
 		f.Spec.Image = build.Spec.Image
 		if err := r.Update(ctx, f); err != nil {
-			ll.Error(err, "failed to promote build")
+			ll.Error(err, "failed to promote build", "formation", f.GetName())
 			hasErrors = true
 		}
 	}
@@ -119,9 +122,12 @@ func (r *BuildReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *BuildReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	if err := mgr.GetFieldIndexer().IndexField(context.Background(), &v1.Formation{}, builderIndexName, func(rawObj client.Object) []string {
+	ctx, cancel := context.WithTimeout(context.Background(), buildIndexTimeout)
+	defer cancel()
+
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &v1.Formation{}, buildIndexName, func(rawObj client.Object) []string {
 		f := rawObj.(*v1.Formation)
-		builderTag, ok := f.GetAnnotations()[v1.BuilderAnnotation]
+		builderTag, ok := f.GetAnnotations()[v1.BuildStreamAnnotation]
 		if !ok {
 			return nil
 		}
@@ -131,10 +137,10 @@ func (r *BuildReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		return err
 	}
 
-	if err := mgr.GetFieldIndexer().IndexField(context.Background(), &v1.Build{}, builderIndexName, func(rawObj client.Object) []string {
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &v1.Build{}, buildIndexName, func(rawObj client.Object) []string {
 		f := rawObj.(*v1.Build)
-		builderTag, ok := f.GetAnnotations()[v1.BuilderAnnotation]
-		if !ok {
+		builderTag := f.Spec.Stream
+		if builderTag == "" {
 			return nil
 		}
 

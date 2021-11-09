@@ -20,16 +20,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	BuildStreamAnnotation = "poco-build-stream"
+)
+
 type BuildState string
 
 const (
-	BuildStateUnknown BuildState = ""
-	BuildStateSuccess BuildState = "success"
-	BuildStateFailure BuildState = "failure"
+	BuildStateUnknown  BuildState = ""
+	BuildStateBuilding BuildState = "building"
+	BuildStateSuccess  BuildState = "success"
+	BuildStateFailure  BuildState = "failure"
 )
 
 // BuildSpec defines the desired state of Build
 type BuildSpec struct {
+	// Stream is the image release stream, grouping builds
+	Stream string `json:"stream"`
 	// Ref is the git branch
 	Ref string `json:"ref"`
 	// Head is the git commit ( sha )

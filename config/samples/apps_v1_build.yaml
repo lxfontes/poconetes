@@ -4,9 +4,8 @@ metadata:
   # should have owner-ref to builder
   name: builder-abcxyz
   namespace: sample-project
-  annotations:
-    poco-builder: sample-builder
 spec:
+  stream: builder-sample
   ref: master
   head: abczyx
   image: nginx

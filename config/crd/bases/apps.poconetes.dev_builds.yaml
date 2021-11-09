@@ -48,12 +48,16 @@ spec:
               skip:
                 description: Skip flags the build as bad, preventing further deployments
                 type: boolean
+              stream:
+                description: Stream is the image release stream, grouping builds
+                type: string
               tag:
                 description: Tag ...
                 type: string
             required:
             - head
             - ref
+            - stream
             type: object
           status:
             description: BuildStatus defines the observed state of Build

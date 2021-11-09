@@ -4,7 +4,7 @@ metadata:
   name: autoscaling
   namespace: sample-project
   annotations:
-    poco-builder: sample-builder
+    poco-build-stream: builder-sample
 spec:
   minReplicas: 1
   maxReplicas: 10
